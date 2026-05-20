@@ -12,7 +12,11 @@ prompt_2 = PromptTemplate.from_template(
     '帮我{result}解释含义'
 )
 
-chain = prompt_1 | model | StrOutputParser() | prompt_2 | model
+def show_any(result):
+    print("临时打印结果",result)
+    return result
+
+chain = prompt_1 | model | StrOutputParser() | show_any | prompt_2 | model
 
 res = chain.stream(input={"lastname": "林", "gender": "女孩"})
 for chunk in res:
