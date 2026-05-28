@@ -1,26 +1,23 @@
 from langchain_ollama import OllamaLLM
-from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder, ChatMessagePromptTemplate, PromptTemplate
+from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 
 model = OllamaLLM(model="deepseek-r1:1.5b")
 
-# prompt = ChatPromptTemplate.from_messages(
-#   [("system", "你是一个诗词高手，很会帮用户写诗"),
-#   MessagesPlaceholder(variable_name="hsitory"),
-#   ("human", "{user_input}")]
-# )
-# history = [
-#   ("human", "请写一首唐诗"),
-#   ("ai", "白日依山尽，黄河入海流。欲穷千里目， 更上一层楼。"),
-# ]
+# 聊天历史模板 =======================================================================
+prompt = ChatPromptTemplate.from_messages(
+    [
+        ("system", "你是一个诗人。"),
+        MessagesPlaceholder(variable_name="history"),
+        ("human", "按照格式, 写关于{topic}的一首诗?"),
+    ])
 
-# chain = prompt | model
-
-# for chunk in chain.stream(input={"user_input": "参考上面的格式，写一首内容含北京的唐诗", "hsitory": history}):
-#   print(chunk, end="", flush=True)
-
-prompt = PromptTemplate.from_template("请写一首关于{topic}的唐诗")
-
+history = [
+    ("human", "写关于春天的一首诗?"),
+    ("assistant", "春天来了，花儿开了，鸟儿唱了，大地复苏了，万物生长了。"),
+    ("human", "写关于夏天的一首诗?"),
+    ("assistant", "夏天来了，天气晴朗，风和日丽，人来人往，香风吹着。"),
+]
 chain = prompt | model
 
-for chunk in chain.stream(input={"topic": "北京"}):
-  print(chunk, end="", flush=True)
+for chunk in chain.stream(input={"history": history, "topic": "明天"}):
+    print(chunk, end="", flush=True)
